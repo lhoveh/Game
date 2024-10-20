@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+
+    <meta name="description" content="This is a JS and CSS exercise - game">
+
+    <link rel="icon" type="image/x-icon" href="images\icon.png">
+
+    <!-- fonts -->
+
+    <!-- roboto -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
+
+
+    <title>Escapada de Bangu</title>
+</head>
+
+<body>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap');
+
+        body,
+        html {
+            /* background-image: linear-gradient(to right top, #f6e4e4, #e0d3d7, #cac3c7, #b5b3b6, #a3a3a3);
+     */
+
+            /* background-image: url(images/textura2.png); */
+            background-size: cover;
+
+            /* background-color: #412728; */
+
+            /* background-color: #2A272A; */
+
+            background-image: url(images/fundo\ 2.png);
+            height: 100%;
+        }
+
+        #prisioneiro {
+
+            left: 0;
+            top: 0;
+            position: relative;
+
+            /* background-color: red; */
+            text-align: center;
+            /* background-color: brown; */
+            width: 51px;
+            height: 138px;
+        }
+
+        #modal {
+
+            visibility: hidden;
+            z-index: 15;
+            position: fixed;
+            padding: 0;
+            left: 0;
+            top: 0;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            /* margin: auto; */
+
+            opacity: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+
+            transition: opacity 0.5s ease-in-out, visibility 0s;
+            /* tansição para opaciity e visibility */
+            /* vai ocorrer quando opacity mudar de 0 para um (no visibile) em 0.5s */
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+
+        }
+
+        #modal.visible {
+            opacity: 1;
+            visibility: visible;
+            /* transition: opacity 0.5s ease-in-out, visibility 0s linear; */
+            transition-delay: 0s;
+            /* Resetando o delay para mostrar imediatamente */
+
+        }
+
+
+        div.aviso {
+            /* THAT'S THE FRAME FOR GAME MESSAGES (AFTER SEEING OR PICKING-UP AN OBJECT) */
+            /* Exemplo, cliquei na grade */
+
+            border: 7px solid;
+            width: 340px;
+            height: 500px;
+            margin: auto;
+
+            /* margin-top: 20px; */
+            /* padding-top: 50px; */
+
+            z-index: 10;
+
+            position: fixed;
+            /* left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0; */
+
+            margin: auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background-image: url(images/textura2.png);
+
+            background-size: contain;
+
+        }
+
+        #cell {
+
+            margin: auto;
+            width: 340px;
+            height: 300px;
+
+
+            margin-top: 20px;
+            position: relative;
+
+            background-image: url(images/cell-4.jpg);
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+
+        }
+
+        #cell-menor {
+            width: 100%;
+            height: 170px;
+
+            top: 100px;
+            left: 0;
+            position: relative;
+
+            /* background-color: aliceblue; */
+        }
+
+        div.objects {
+            /* THAT'S THE FRAME FOR lists of OBJECTS (INVENTORY AND FOUND OBJECTS) */
+
+            border: 10px solid;
+            width: 340px;
+            height: 600px !important;
+            margin: auto;
+
+            margin-top: 20px;
+            padding-top: 50px;
+
+            z-index: 10;
+
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+
+            margin: auto;
+
+            /* display: flex; */
+            align-items: center;
+            justify-content: center;
+
+            background-image: url(images/textura2.png);
+            background-image: url(images/background.jpg);
+            background-size: cover;
+
+        }
+
+        div.mensagem-div {
+            margin: auto;
+            background-color: white;
+            /* display: flex; */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            text-align: center;
+
+            font-family: 'Roboto', sans-serif;
+            z-index: 99;
+
+            width: calc(340px*0.75);
+            height: 40%;
+
+            margin-bottom: 50px;
+        }
+
+        div.mensagem-div-aviso {
+            margin: auto;
+            background-color: white;
+            display: flex;
+            /* flex-direction: column; */
+            justify-content: center;
+            align-items: center;
+
+            text-align: center;
+
+            font-family: 'Roboto', sans-serif;
+            z-index: 99;
+
+            width: calc(340px*0.75);
+            height: calc(340px*0.75);
+
+            /* margin-bottom: 50px; */
+        }
+
+        #x {
+            position: absolute;
+            left: 260px;
+            margin: 0;
+            top: 5px;
+            /* width: 35px;
+            height: 35px; */
+            box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.3);
+            z-index: 99;
+
+        }
+
+        #x::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: calc(100% + 20px);
+            height: calc(100% + 20px);
+            background-color: #FFF;
+            box-shadow: -10px -10px 20px rgba(0, 0, 0, 0.3);
+            transform: rotate(3deg);
+            z-index: -1;
+        }
+
+        #x:hover {
+            filter: brightness(85%);
+            background-color: brown;
+            border-color: red;
+        }
+
+
+
+
+
+
+
+        #grade-div {
+
+            position: absolute;
+            top: 30px;
+            left: 170px;
+            width: 50px;
+            height: 50px;
+
+
+            opacity: 0.5;
+        }
+
+        #caneca-div {
+            position: absolute;
+            top: 110px;
+            left: 260px;
+            width: 50px;
+            height: 50px;
+
+
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            box-shadow: none;
+        }
+
+        #lencol-div {
+
+            position: absolute;
+
+            left: 40px;
+            width: 60px;
+            height: 30px;
+
+            top: 85px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            box-shadow: none;
+
+        }
+
+        #mug {
+
+            filter: drop-shadow(4px 4px 6px rgba(0, 0, 0, 0.86));
+
+            width: 50%;
+            height: 50%;
+        }
+
+
+
+        .menu-container {
+
+            border: 1px solid;
+            width: 80%;
+            margin: auto;
+            height: 100px;
+
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-style: solid;
+            border-color: #E2B659;
+
+            border: 2px solid #E2B659;
+            box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5),
+                0px 0px 10px rgba(0, 0, 0, 0.5) inset;
+
+            background-color: black;
+            background-color: #7F4D3E;
+        }
+
+        .items {
+            width: 40%;
+            height: 80%;
+
+            display: flex;
+
+            font-family: 'Open Sans', sans-serif;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: capitalize;
+            background-color: #E2B659;
+
+            /* transform: translate(-1%, -1%); */
+            /* border: 1px solid #ccc; */
+            box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.2), inset 0px 1px 1px rgba(255, 255, 255, 0.5), inset 0px -1px 1px rgba(0, 0, 0, 0.1);
+            /* box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3), -2px -2px 3px rgba(255, 255, 255, 0.5), inset 1px 1px 2px rgba(0, 0, 0, 0.1), inset -1px -1px 2px rgba(255, 255, 255, 0.5); */
+            border: none;
+        }
+
+        .items:hover {
+            box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3), inset 0px 1px 1px rgba(255, 255, 255, 0.5), inset 0px -2px 2px rgba(0, 0, 0, 0.2);
+
+        }
+
+
+        /* quadrado das thumbs dos achados*/
+        .achados {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-style: solid;
+            border-width: 2px;
+            border-color: #E2B659;
+            width: 60%;
+            margin: auto;
+            height: 150px;
+
+            background-color: black;
+            /* background-color: #7F4D3E; */
+        }
+
+        .hidden {
+            display: none;
+            visibility: hidden;
+
+
+        }
+
+
+
+        #modal-2 {
+            margin: auto;
+            /* border-width: 10px; */
+            /* border-color: red; */
+            width: 400px;
+            height: 300px;
+
+            /* border-style: solid transparent; */
+            margin-top: 50px;
+            position: relative;
+            background-color: white;
+        }
+
+        button.lista-botao {
+            width: 50%;
+
+            width: calc(340px*0.55);
+            height: calc(300px*0.15);
+            background-color: #E2B659;
+            /* cursor: url(/images/mug_cur.cur), auto; */
+        }
+
+
+
+        .caneca-cursor {
+            cursor: url(images/mug_cur.cur), auto;
+            width: 50%;
+
+            width: calc(340px*0.55);
+            height: calc(300px*0.15);
+            background-color: #E2B659;
+            /* background-color: #C1564C; */
+        }
+
+        .lencol-cursor {
+            cursor: url(images/sheet-cur.cur), auto;
+
+            width: 50%;
+
+            width: calc(340px*0.55);
+            height: calc(300px*0.15);
+            background-color: #E2B659;
+        }
+
+        .tudo {
+            height: 100%;
+        }
+    </style>
+
+    <!-- MODAL AVISO -->
+
+    <div id="modal"> <!--Abre para itens do menu, inventory, etc-->
+
+        <!-- Esse modal vai abrir quando usuário clicar na imagem de um objeto da cena em destaque -->
+
+        <div id="modal-aviso" class="aviso">
+       
+            <img id="x" src="images/exit2.png">
+
+            <!-- aqui entra mensagem criada pelo js, manipulacao do dom-->
+
+        </div>
+
+    </div>
+
+    <!-- FIM DO MODAL AVISO-->
+
+
+    <!-- Tela principal -->
+
+    <div class="tudo">
+        <!-- Uma div dentro da screen, com 100% da tela. Não lembro porque coloquei isso, só sei que foi assim -->
+        
+        <div id="cell">
+            <!-- A maioria das divs está com id porque to usando js pras funções -->
+             
+            <!-- Essa é a cela, div maior com alutra da cela, mas width 100%, para dentro dela centralizar a cela menor
+            A imagem preenche toda essa div (a altura),
+            Mas ha uma div cell-menor com altura menor, para limitar o movimento do boneco,
+            e não permitir que ele ultrapasse a div -->
+
+
+            <div id="cell-menor">
+
+                <div id="lencol-div" class="active">
+
+                </div>
+                <div id="caneca-div" class="active">
+
+                    <img id="mug" src="images/mug-5.png">
+                </div>
+
+                <div id="grade-div" class="active">
+
+                </div>
+                <div id="prisioneiro">
+                    <img src="images/prisioner-3.png">
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- as janelas embaixo-->
+
+
+
+        <div class="menu-container">
+
+            <div class="items" id="objects-button">
+                Objects
+            </div>
+
+            <!-- <div class="items" id="inventario">
+
+                inventario
+            </div> -->
+        </div>
+
+        <br><br>
+
+        <div class="achados">
+            <img id="img-achados">
+        </div>
+        <br><br>
+    </div>
+</body>
+
+<script>
+
+    // Lists for inventary and found objects
+
+
+    let escondidos = ["lencol", "caneca", "grade"];
+    let encontrados = [];
+    let inventario = [];
+    const img_achados = document.getElementById("img-achados");
+    const prisioneiro = document.getElementById("prisioneiro");
+
+    let meusobjetos = document.getElementById("objects-button") // button in main screen - that opens the window of objects (found and inventory)
+    meusobjetos.addEventListener("click", abre_objects);
+
+    let modal = document.getElementById("modal");
+    let aviso = document.getElementById("modal-aviso");
+
+    let x = document.getElementById("x");
+    x.addEventListener("click", close)
+
+    function abre_objects() { // Open the window of objects (found and inventory)
+
+        console.log("You clicked on Objects buttton")
+
+        modal.classList.add("visible");     // modal just opened, and now visible
+
+
+
+        // now, we create the message-divs **** FOR INVENTARY AND FOUND OBJECTS
+
+        let mensagem1 = document.createElement("div");
+        mensagem1.id = "mensagem-div1";
+        mensagem1.className = "mensagem-div"
+
+
+        let title1 = document.createElement("h2");
+        title1.innerHTML = "Items on the room"
+
+        let title2 = document.createElement("h2");
+        title2.innerHTML = "Inventory"
+
+
+        let mensagem2 = document.createElement("div");
+        mensagem2.id = "mensagem-div2";
+        mensagem2.className = "mensagem-div"
+
+        aviso.className = "objects" // OPEN THE CLASS/VERSION OF POP UP FOR OBJECS (FIND/INVEOTORY): 2 WHITE BOXES
+
+        aviso.appendChild(mensagem1)
+        mensagem1.appendChild(title1)
+
+        aviso.appendChild(mensagem2)
+        mensagem2.appendChild(title2)
+
+
+
+        let n = 0
+
+        // SETTING THE LOOP, WHILE N= LENGHT, KEEP SENDING BUTTONS **** discovered *****
+
+        while (n < inventario.length) {
+
+
+            let botao = document.createElement("button"); // button created
+
+            mensagem2.appendChild(botao);
+
+            let item = inventario[n];
+
+            botao.id = item;
+            botao.className = "lista-botao"
+            botao.innerHTML = item;  // name of the item, ex.: caneca.
+
+
+
+            botao.addEventListener("click", function () {
+                selection(item)
+            });
+
+
+            n++;
+
+        }
+
+        function selection(item) {
+
+            if (item == "caneca") {
+
+                console.log("clicked on the mug, on the inventory")
+
+                let item_item = document.getElementById(item); // this is the button
+
+                if (item_item.className == "lista-botao") {
+
+                    document.body.style.cursor = 'url(images/mug_cur.cur), auto';
+                    document.querySelectorAll(".lista-botao").forEach(function (element) {
+                        element.className = "caneca-cursor"; // now the cursor is a mug
+
+                        item_item.style.backgroundColor = '#C1564C';
+
+                        // now if click on x:
+
+                        x.addEventListener("click", closeCursor)
+
+                        function closeCursor() {
+
+                            //removing the cursor
+                            document.querySelectorAll(".caneca-cursor").forEach(function (element) {
+                                element.className = "lista-botao ";
+                            });
+
+
+                            document.body.style.cursor = 'auto';
+
+
+                        }
+
+                        // now if click on grade:
+
+                        let grade = document.getElementById("grade");
+                        grade.addEventListener("click", gradeNoise)
+
+                        function gradeNoise() {
+
+                            //removing the cursor
+                            document.querySelectorAll(".caneca-cursor").forEach(function (element) {
+                                element.className = "lista-botao ";
+                            });
+
+
+                            document.body.style.cursor = 'auto';
+
+                            // closing 
+
+                            let mensagem1 = document.getElementById("mensagem-div1");
+                            let mensagem2 = document.getElementById("mensagem-div2");
+                            mensagem1.remove();
+                            mensagem2.remove();
+
+                            // open modal for message
+
+                            modal.classList.add("visible");
+
+                            let aviso = document.getElementById("modal-aviso")
+                            aviso.className = "aviso";
+
+                            let mensagem = document.createElement("div");
+                            mensagem.id = "mensagem-div";
+                            mensagem.className = "mensagem-div-aviso";
+                            modal.appendChild(mensagem)
+
+                            mensagem.innerText = "You dragged the mug across the grid and made a loud noise. How inconvenient!\n\
+\n\
+The guard came in such distress to complain that he dropped the cell keys on the floor.\n\
+   \n\
+   Now the keys can be seen through the bars. Too bad your little arm can't reach it."
+
+                            encontrados.push("keys");
+
+                            console.log(`os items encontrados são ${encontrados}`)
+
+                        }
+
+                    });
+                }
+
+            }
+
+            // NOW CLICKING ON SHEETS ON INVENTORY
+
+            else if (item == "lencol") {
+
+                console.log("clicou no lencol")
+
+                let item_item = document.getElementById(item); // this is the button
+                item_item.style.backgroundColor = '#C1564C';
+
+                if (item_item.className == "lista-botao") {
+
+                    document.body.style.cursor = 'url(images/sheet-cur.cur), auto';
+                    document.querySelectorAll(".lista-botao").forEach(function (element) {
+                        element.className = "lencol-cursor";
+                        // element.classList.remove("caneca-cursor");
+
+                        // now if click on x:
+
+                        x.addEventListener("click", closeCursor)
+
+                        function closeCursor() {
+
+                            document.querySelectorAll(".lencol-cursor").forEach(function (element) {
+                                element.className = "lista-botao";
+                            });
+
+
+                            document.body.style.cursor = 'auto';
+
+
+                        }
+
+
+                        // now if click on keys:
+
+                        if (!inventario.includes('keys')) {
+
+                            let keys = document.getElementById("keys");
+                            keys.addEventListener("click", lencolKeys)
+
+                            function lencolKeys() {
+
+                                //removing the cursor
+                                document.querySelectorAll(".lencol-cursor").forEach(function (element) {
+                                    element.className = "lista-botao";;
+                                });
+
+
+                                document.body.style.cursor = 'auto';
+
+                                // closing 
+
+                                let mensagem1 = document.getElementById("mensagem-div1");
+                                let mensagem2 = document.getElementById("mensagem-div2");
+                                mensagem1.remove();
+                                mensagem2.remove();
+
+                                // open modal for message
+
+                                modal.classList.add("visible");
+
+                                let aviso = document.getElementById("modal-aviso")
+                                aviso.className = "aviso";
+
+                                let mensagem = document.createElement("div");
+                                mensagem.id = "mensagem-div";
+                                mensagem.className = "mensagem-div-aviso";
+                                modal.appendChild(mensagem)
+
+                                mensagem.innerText = "You grabbed a sheet, but you didn't fall asleep on the job.\n\
+\n\
+You wrapped it up, made a sort of stretched rope, and used it to grab the keys.\n\
+   \n\
+   You little big genius!"
+
+                                let index = encontrados.indexOf("keys");
+
+                                encontrados.splice(index, 1)
+
+                                inventario.push("keys");
+
+                                console.log(`os items encontrados são ${encontrados}`)
+
+                            }
+                        }
+                    });
+
+                }
+
+            }
+
+        }
+
+        let n2 = 0
+
+        console.log(encontrados)
+        while (n2 < encontrados.length) {
+
+
+            let botao = document.createElement("button"); // button created
+
+            mensagem1.appendChild(botao);
+
+            let item = encontrados[n2];
+
+            console.log(item)
+
+            botao.id = item;
+            botao.className = "lista-botao"
+            botao.innerHTML = item;   // Nome do item, ex.: caneca.
+
+            botao.addEventListener("click", function () {
+                selection(item)
+            });
+
+
+            n2++;
+
+        }
+
+    }
+
+
+    function close() {
+
+        let frame = document.getElementById('modal-aviso')
+
+        if (frame.className == "objects") {
+
+            let mensagem1 = document.getElementById("mensagem-div1");
+            let mensagem2 = document.getElementById("mensagem-div2");
+            mensagem1.remove();
+            mensagem2.remove();
+
+        }
+
+        else if (frame.className == "aviso") {
+
+            let mensagem = document.getElementById("mensagem-div");
+            mensagem.remove();
+        }
+
+
+
+
+        modal.classList.remove('visible');
+    }
+
+
+
+
+
+
+    const caneca = document.getElementById("caneca-div");
+
+    img_achados.addEventListener("click", ThumbClic);
+
+    // FUNCOES PARA CLIQUE NOS OBJETOS
+
+    function colision() {
+
+        const prisioneiroPosicao = prisioneiro.getBoundingClientRect();
+
+        const canecaPosicao = caneca.getBoundingClientRect();
+
+        const grade = document.getElementById("grade-div");
+        const gradePosicao = grade.getBoundingClientRect();
+
+        const lencol = document.getElementById("lencol-div");
+        const lencolPosicao = lencol.getBoundingClientRect();
+
+        const img_achados = document.getElementById("img-achados");
+        if (
+            prisioneiroPosicao.right >= canecaPosicao.left &&
+            prisioneiroPosicao.left <= canecaPosicao.right &&
+            prisioneiroPosicao.bottom >= canecaPosicao.top &&
+            prisioneiroPosicao.top <= canecaPosicao.bottom
+            &&
+            caneca.className === "active"
+        ) {
+            // Ação a ser executada quando ocorrer a colisão
+            console.log("colisão detectada com caneca!");
+            return objects("caneca", "images/mug-6.png", "caneca_tumb");
+
+
+        }
+
+        else if ( //CASO DE COLISAO COM O LENCOL
+            prisioneiroPosicao.right >= lencolPosicao.left &&
+            prisioneiroPosicao.left <= lencolPosicao.right &&
+            prisioneiroPosicao.bottom >= lencolPosicao.top &&
+            prisioneiroPosicao.top <= lencolPosicao.bottom
+            &&
+            lencol.className === "active"
+        ) {
+
+
+            // Ação a ser executada quando ocorrer a colisão
+            console.log("colisão detectada! com lencol");
+
+            return objects("lencol", "images/lencol-1.png", "lencol_tumb");
+
+
+        }
+
+
+        else if ( //CASO DE COLISAO COM A GRADE
+
+            prisioneiroPosicao.right >= gradePosicao.left &&
+            prisioneiroPosicao.left <= gradePosicao.right &&
+            prisioneiroPosicao.bottom >= gradePosicao.top &&
+            prisioneiroPosicao.top <= gradePosicao.bottom
+            &&
+            grade.className === "active"
+        ) {
+
+            console.log("colidiu com a grade, tem que chamar a funcao")
+            return objects("grade", "images/grade.png", "grade_tumb");
+
+
+        }
+
+        else {
+            img_achados.setAttribute("src", "");
+        }
+    }
+
+    function objects(name, src, thumb) {
+
+        console.log(`colidou com a ${name}, e ja to na funcao`)
+        console.log(escondidos)
+
+        img_achados.setAttribute("src", src);
+        img_achados.setAttribute("name", thumb);
+
+        if (escondidos.includes(name)) {
+
+            console.log(`${name} estava na lista de escondidos`)
+
+            let index = escondidos.indexOf(name);
+
+            escondidos.splice(index, 1)
+
+            console.log("Agora, veja como ficou a lista de escondidos:")
+            console.log(escondidos)
+
+            encontrados.push(name);
+            console.log("Agora, veja como ficou a lista de escontrados:")
+            console.log(encontrados)
+
+        }
+
+    }
+
+    // função de clicar na thumnail
+
+    function ThumbClic() {
+
+        console.log(" clicou na thumbnail ");
+
+
+        if (img_achados.name == "caneca_tumb") {
+
+            console.log("e foi na thumb da caneca")
+            let objeto = "caneca"
+            caneca.className = "hidden";
+
+
+
+            //tirar a imagem da thumb e manda objeto pra lista de encontrados
+
+            img_achados.setAttribute("src", "");
+            img_achados.name = "";
+
+            let encontrados_index = escondidos.indexOf(objeto);
+            encontrados.splice(encontrados_index, 1); // tira do encontrados, vai pro inventario
+            inventario.push("caneca");
+
+            console.log(encontrados + " é a lista de objetos encontrados");
+
+            // abre o modal **** OPEN MODAL FOR MESSAGE
+
+
+            modal.classList.add("visible");
+
+            let aviso = document.getElementById("modal-aviso")
+            aviso.className = "aviso";
+
+            let mensagem = document.createElement("div");
+            mensagem.id = "mensagem-div";
+            mensagem.className = "mensagem-div-aviso";
+            modal.appendChild(mensagem)
+
+            mensagem.innerText = "  Você acaba de pegar a caneca. Agora é sua, toda sua.\n\
+          \n\
+                Não vá arrastar a caneca na grade. Além de muito clichè, pode incomodar os guardas."
+
+
+        }
+
+        else if (img_achados.name == "lencol_tumb") {
+
+
+            console.log("clicked on sheet thumnail")
+
+            let objeto = "lencol"
+            lencol.classList.remove("active");
+            // lencol.className = "hidden";
+
+            //tirar a imagem da thumb e manda objeto pra lista de encontrados
+
+            img_achados.setAttribute("src", "");
+            img_achados.name = "";
+
+            encontrados.splice(objeto, 1); // tira do encontrados, vai pro inventario
+            inventario.push(objeto);
+
+            console.log("a lista de objetos encontrados é: ");
+            console.log(encontrados);
+
+            console.log("the inventary is: ");
+            console.log(inventario);
+
+            console.log("lista de escondidos:")
+            console.log(escondidos);
+
+            // abre o modal
+
+            modal.classList.add("visible");
+
+            let aviso = document.getElementById("modal-aviso")
+            aviso.className = "aviso";
+
+            let mensagem = document.createElement("div");
+            mensagem.id = "mensagem-div";
+            mensagem.className = "mensagem-div-aviso";
+            modal.appendChild(mensagem)
+
+
+            mensagem.innerText = "  You just grabbed the sheet. Now it's yours, all yours. \n\
+          \n\
+          While some steal towels from the resort in Fernando de Noronha, you just stole a sheet from the cell in the prison on Paquetá Island. \n\
+                \n\
+                Is this how you imagined your life would be?"
+
+        }
+
+        else if (img_achados.name == "grade_tumb") {
+
+
+            console.log("houve click na grade")
+
+            let objeto = "grade"
+
+            //don't need to change the grade div, as it keeps active. It's not an item that will be removed from the scene.
+            // same for the thumbnail
+
+
+
+            console.log("a lista de objetos encontrados é: ");
+            console.log(encontrados);
+
+            console.log("the inventary is: ");
+            console.log(inventario);
+
+            console.log("lista de escondidos:")
+            console.log(escondidos);
+
+            // abre o modal
+
+
+            modal.classList.add("visible");
+
+            let aviso = document.getElementById("modal-aviso")
+            aviso.className = "aviso";
+
+            let mensagem = document.createElement("div");
+            mensagem.id = "mensagem-div";
+            mensagem.className = "mensagem-div-aviso";
+            modal.appendChild(mensagem)
+
+            mensagem.innerText = "Yes, there are bars here. That's how you see the sunrise as a square.\n\
+          \n\
+          Even so, doctors recommend exposing oneself to the sun (even if square) for at least 15 minutes in the morning.\n\
+                \n\
+                And be careful not to drag any objects on the bars. The noise bothers the guards a lot."
+
+
+        }
+
+    }
+
+    const lencol = document.getElementById("lencol-div");
+    const lencolPosicao = lencol.getBoundingClientRect();
+
+    // ********************************************************************************************* //
+    // EVENTS FOR THE PRISIONER MOVEMENT
+    // USING THE MOUSE :::
+
+
+
+
+    // VARIABLE for cell-menor 
+    let celMenor = document.getElementById("cell-menor");
+
+    // defining the limits of the small-cell (limited minor div inside the cell)
+    let celWidth = celMenor.offsetWidth;
+    let celHeight = celMenor.offsetHeight;
+
+    // event listener for the event "mousedown" on prisioner
+    prisioneiro.addEventListener("mousedown", function (e) {
+
+        // calcula a diferença entre a posição do mouse e a posição do prisioneiro
+        let offsetX = e.clientX - prisioneiro.offsetLeft;
+        let offsetY = e.clientY - prisioneiro.offsetTop;
+
+        console.log("clicou no mouse")
+
+        // adiciona um event listener para o evento "mousemove" no documento
+        document.addEventListener("mousemove", movePrisioneiro);
+
+        // adiciona um event listener para o evento "mouseup" no documento
+        document.addEventListener("mouseup", function () {
+            document.removeEventListener("mousemove", movePrisioneiro);
+        });
+
+        // função que movimenta o prisioneiro
+        function movePrisioneiro(e) {
+            // calcula a nova posição do prisioneiro
+            let newLeft = e.clientX - offsetX;
+            let newTop = e.clientY - offsetY;
+
+            // verifica se o prisioneiro está dentro dos limites da célula
+            if (newLeft < 0) {
+                newLeft = 0;
+            }
+            if (newLeft + prisioneiro.offsetWidth > celWidth) {
+                newLeft = celWidth - prisioneiro.offsetWidth;
+            }
+            if (newTop < 0) {
+                newTop = 0;
+            }
+            if (newTop + prisioneiro.offsetHeight > celHeight) {
+                newTop = celHeight - prisioneiro.offsetHeight;
+            }
+
+            // atualiza a posição do prisioneiro
+            prisioneiro.style.left = newLeft + "px";
+            prisioneiro.style.top = newTop + "px";
+
+            var prisioneiroPosicao = prisioneiro.getBoundingClientRect();
+            var canecaPosicao = caneca.getBoundingClientRect();
+
+            var grade = document.getElementById("grade-div");
+            var gradePosicao = grade.getBoundingClientRect();
+
+            return colision();
+
+
+        };
+
+
+
+
+
+    });
+
+    //************************** NOW MOVING TROUGHT TOUCH *********************************
+
+    prisioneiro.addEventListener('touchstart', function (event) {
+        // salvar a posição inicial do objeto quando o usuário toca na tela
+        this.posicaoInicial = {
+            x: event.touches[0].clientX - this.offsetLeft,
+            y: event.touches[0].clientY - this.offsetTop
+        };
+
+        console.log("Touched")
+    });
+
+    prisioneiro.addEventListener('touchmove', function (event) {
+
+
+        if (!this.posicaoInicial) return;
+
+        // mover o objeto com base na posição atual do toque e na posição inicial do objeto
+
+        console.log("inicial position")
+        const posicaoMinima = {
+            x: 0,
+            y: 0
+        };
+
+        const posicaoMaxima = {
+            x: document.getElementById("cell-menor").clientWidth - this.offsetWidth,
+            y: document.getElementById("cell-menor").clientHeight - this.offsetHeight
+        };
+
+        let novaPosicaoX = event.touches[0].clientX - this.posicaoInicial.x;
+        let novaPosicaoY = event.touches[0].clientY - this.posicaoInicial.y;
+
+        // verificar se o elemento está dentro dos limites permitidos
+        novaPosicaoX = Math.min(Math.max(novaPosicaoX, posicaoMinima.x), posicaoMaxima.x);
+        novaPosicaoY = Math.min(Math.max(novaPosicaoY, posicaoMinima.y), posicaoMaxima.y);
+
+        // atualizar a posição do elemento
+        this.style.left = novaPosicaoX + 'px';
+        this.style.top = novaPosicaoY + 'px';
+
+
+        const prisioneiroPosicao = prisioneiro.getBoundingClientRect();
+        const canecaPosicao = caneca.getBoundingClientRect();
+
+        const grade = document.getElementById("grade-div");
+        const gradePosicao = grade.getBoundingClientRect();
+
+        return colision();
+
+        // if ( //CASO DE COLISAO COM A CANECA
+        //     prisioneiroPosicao.right >= canecaPosicao.left &&
+        //     prisioneiroPosicao.left <= canecaPosicao.right &&
+        //     prisioneiroPosicao.bottom >= canecaPosicao.top &&
+        //     prisioneiroPosicao.top <= canecaPosicao.bottom
+        //     &&
+        //     caneca.className === "active"
+        // ) {
+        //     // Ação a ser executada quando ocorrer a colisão
+        //     console.log("colisão detectada! com caneca");
+
+        //     return objects("caneca", "images/mug-6.png", "caneca_tumb");
+
+        // }
+
+        // else if ( //CASO DE COLISAO COM O LENCOL
+        //     prisioneiroPosicao.right >= lencolPosicao.left &&
+        //     prisioneiroPosicao.left <= lencolPosicao.right &&
+        //     prisioneiroPosicao.bottom >= lencolPosicao.top &&
+        //     prisioneiroPosicao.top <= lencolPosicao.bottom
+        //     &&
+        //     lencol.className === "active"
+        // ) {
+
+
+        //     // Ação a ser executada quando ocorrer a colisão
+        //     console.log("colisão detectada! com lencol");
+
+        //     return objects("lencol", "images/lencol-1.png", "lencol_tumb");
+
+
+        // }
+
+
+        // else if ( //CASO DE COLISAO COM A GRADE
+
+        //     prisioneiroPosicao.right >= gradePosicao.left &&
+        //     prisioneiroPosicao.left <= gradePosicao.right &&
+        //     prisioneiroPosicao.bottom >= gradePosicao.top &&
+        //     prisioneiroPosicao.top <= gradePosicao.bottom
+        //     &&
+        //     grade.className === "active"
+        // ) {
+
+        //     return objects("grade", "images/grade.png", "grade_tumb");
+
+        // }
+
+
+
+        // else {
+        //     img_achados.setAttribute("src", "");
+        //     img_achados.name = "";
+        //     console.log(img_achados)
+        //     // img_achados.setAttribute("id", "normal");
+        // }
+
+    });
+
+    prisioneiro.addEventListener('touchend', function (event) {
+        // remover a posição inicial do objeto
+        this.posicaoInicial = null;
+        // remover o manipulador de evento 'touchmove'
+        // this.removeEventListener('touchmove');
+    });
+
+    // *************************************************
+    // MOVING WITH THE KEYBOARD
+
+    document.addEventListener("keydown", function (event) {
+
+        const prisioneiroPosicao = prisioneiro.getBoundingClientRect();
+        const canecaPosicao = caneca.getBoundingClientRect();
+        const grade = document.getElementById("grade-div");
+        const gradePosicao = grade.getBoundingClientRect();
+        const img_achados = document.getElementById("img-achados");
+
+        if (event.keyCode === 37) {
+            // left
+
+            const newLeft = prisioneiro.offsetLeft - 10;
+
+            if (newLeft >= 0) {
+                prisioneiro.style.setProperty("left", newLeft + "px");
+
+                return colision();
+
+            }
+
+        } else if (event.keyCode === 38) {
+            // up
+
+            const newTop = prisioneiro.offsetTop - 10;
+
+
+            if (newTop >= 0) {
+                prisioneiro.style.setProperty("top", newTop + "px");
+
+                // return colision();
+            }
+
+
+        } else if (event.keyCode === 39) {
+            // right
+
+            const newLeft = prisioneiro.offsetLeft + 10;
+            if (newLeft <= 290) {
+                prisioneiro.style.setProperty("left", newLeft + "px");
+
+                return colision();
+            }
+
+
+        } else if (event.keyCode === 40) {
+            // downn
+
+            const newTop = prisioneiro.offsetTop + 10;
+            const limiteInferior = document.getElementById("cell-menor").offsetHeight - prisioneiro.offsetHeight;
+
+            if (newTop <= limiteInferior) {
+                prisioneiro.style.setProperty("top", newTop + "px");
+            }
+
+        }
+
+    });
+
+
+
+</script>
+
+</html>
